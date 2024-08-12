@@ -25,6 +25,9 @@ modals when the esc key is hit. That stuff is all built in, but shadcn introduce
 > > /lib/utils.ts handles the merging of classes in case of conflict (tailwind class order thing)
 > > manually installed ui components are installed to /components/ui
 
+-   button
+-   dialog
+
 I also learned how to style custom reusable components to accept additional classes for styling, keeping that out of the components themselves and leaving it to individual implementations. This is done using the cn() utility function. This combines class names in Tailwind and if there's a conflict such as adding px-5 when the component is styled for its use case, the px-2 that existed previously will be overridden.
 
 ### Appropriate html tags
