@@ -19,7 +19,8 @@ type TPetContext = {
 	numberOfGuests: number;
 	handleChangeActivePetId: (id: string) => void;
 	handleCheckoutPet: (id: string) => void;
-	handleAddPet: (pet: Pet) => void;
+	handleAddPet: (pet: Omit<Pet, 'id'>) => void;
+	handleEditPet: (petId: string, changes: Omit<Pet, 'id'>) => void;
 };
 
 export const PetContext = createContext<TPetContext | null>(null);
@@ -43,8 +44,19 @@ export default function PetContextProvider({ petList, children }: PetContextProv
 		setActivePetId(null); // not strictly necessary, but just to be safe
 	};
 
-	const handleAddPet = (pet: Pet) => {
-		setPets((prev) => [...prev, pet]);
+	const handleAddPet = (pet: Omit<Pet, 'id'>) => {
+		setPets((prev) => [...prev, { ...pet, id: Date.now().toString() }]); // this is insane. add to state with a fake ID
+	};
+
+	const handleEditPet = (petId: string, changes: Omit<Pet, 'id'>) => {
+		setPets((prev) =>
+			prev.map((pet) => {
+				if (pet.id === petId) {
+					return { id: petId, ...changes };
+				}
+				return pet;
+			})
+		);
 	};
 
 	return (
@@ -57,6 +69,7 @@ export default function PetContextProvider({ petList, children }: PetContextProv
 				handleChangeActivePetId,
 				handleCheckoutPet,
 				handleAddPet,
+				handleEditPet,
 			}}
 		>
 			{children}

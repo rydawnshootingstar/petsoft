@@ -14,10 +14,10 @@ This project uses the context API for state management.
 
 -   challenge: introduced an entirely new pattern for doing this with NextJS
 
-### Shadcn UI
+### Shadcn-UI
 
 Built on Radix UI, which is an open source component library. Radix doesn't include styling, just behavior like focusing a modal, closing
-modals when the esc key is hit. That stuff is all built in, but shadcn introduces styling by using class-variance-authority. This allows for different variants of components that share core functionality.
+modals when the esc key is hit. That stuff is all built in, but shadcn-ui introduces styling by using class-variance-authority. This allows for different variants of components that share core functionality.
 
 > npx shadcn-ui init
 >
@@ -25,11 +25,38 @@ modals when the esc key is hit. That stuff is all built in, but shadcn introduce
 > > /lib/utils.ts handles the merging of classes in case of conflict (tailwind class order thing)
 > > manually installed ui components are installed to /components/ui
 
+#### The following components were added from shadcn-ui
+
 -   button
 -   dialog
+-   label
+-   input
+-   textarea
 
 I also learned how to style custom reusable components to accept additional classes for styling, keeping that out of the components themselves and leaving it to individual implementations. This is done using the cn() utility function. This combines class names in Tailwind and if there's a conflict such as adding px-5 when the component is styled for its use case, the px-2 that existed previously will be overridden.
 
 ### Appropriate html tags
 
 In the past, I relied too heavily on divs. Though I've previously written plain html websites, I fell into the div trap when learning react. This project helped readjust to picking the most relevant html tags like section, main, button, ul/li, and use more React.Fragments aka <>.
+
+## Prisma
+
+-   npx prisma db push : forceful update, may delete data
+-   npx prisma migrate dev --name init : db migration
+
+### Sqlite
+
+dev db is sqlite.
+
+##### Seeding Data
+
+We have a seed file to fill our empty db for testing (prisma/seed.ts). To use it, we need a script added to package.json
+
+```
+   "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    },
+```
+
+and to run it, we use
+`npx prisma db seed`
