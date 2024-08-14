@@ -1,11 +1,27 @@
-export type Pet = {
-    id: string;
-    name: string;
-    ownerName: string;
-    imageUrl: string;
-    age: number;
-    notes: string;
-}
+import { Pet } from "@prisma/client";
+
+/*
+    Our globally reused types are driven by our prisma model. Changes made to the model will persist automatically on our types. 
+
+    If the model is changed, it will still create problems, but it's better to have them be typescript problems.
+*/
+
+export type PetEssentials = Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>;
+export type PetComplete = Pet;
+
+// currently not used
+// export type PetWithId = Omit<Pet, 'updatedAt' | 'createdAt'>;
+
+// Currently not used. This is a hardcoded type of pet that predates db implementation
+// export type Pet = {
+//     id: string;
+//     name: string;
+//     ownerName: string;
+//     imageUrl: string;
+//     age: number;
+//     notes: string;
+// }
 
 // Currently not used. Pet[] is defined in PetList as its incoming prop type.
-export type Pets = Pet[];
+// export type Pets = Pet[];
+

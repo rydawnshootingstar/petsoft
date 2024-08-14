@@ -45,6 +45,14 @@ In the past, I relied too heavily on divs. Though I've previously written plain 
 -   npx prisma db push : forceful update, may delete data
 -   npx prisma migrate dev --name init : db migration
 
+### Prisma Types
+
+Prisma stores schema objects as typescript types. We can use those instead of hardcoding types that correspond to db models.
+
+```
+import {Pet} from '@prisma/client';
+```
+
 ### Sqlite
 
 dev db is sqlite.

@@ -1,29 +1,29 @@
 'use client';
 
-import { Pet } from '@/lib/types';
+import { PetComplete, PetEssentials } from '@/lib/types';
 import { createContext, useOptimistic, useState } from 'react';
 import { addPet, deletePet, editPet } from '@/actions/actions';
 import { toast } from 'sonner';
 
 /*
-	We pass a handler function for changing the activePetId instead of the raw setActivePetId to allow for any future functionality we want
-	in the action of a user changing that piece of state. 
+	We pass handler functions for changing the context's states instead of the raw setter functions to allow for any additional 
+	functionality we want in the event of a user changing that piece of state. 
 */
 
 type PetContextProviderProps = {
-	petList: Pet[];
+	petList: PetComplete[];
 	children: React.ReactNode;
 };
 
 type TPetContext = {
-	optimisticPets: Pet[];
-	activePetId: string | null;
-	activePet: Pet | undefined;
+	optimisticPets: PetComplete[];
+	activePetId: PetComplete['id'] | null;
+	activePet: PetComplete | undefined;
 	numberOfGuests: number;
-	handleChangeActivePetId: (id: string) => void;
-	handleCheckoutPet: (id: string) => Promise<void>;
-	handleAddPet: (pet: Omit<Pet, 'id'>) => Promise<void>;
-	handleEditPet: (petId: string, changes: Omit<Pet, 'id'>) => Promise<void>;
+	handleChangeActivePetId: (id: PetComplete['id']) => void;
+	handleCheckoutPet: (id: PetComplete['id']) => Promise<void>;
+	handleAddPet: (pet: PetEssentials) => Promise<void>;
+	handleEditPet: (petId: PetComplete['id'], changes: PetEssentials) => Promise<void>;
 };
 
 export const PetContext = createContext<TPetContext | null>(null);
@@ -54,11 +54,11 @@ export default function PetContextProvider({ petList, children }: PetContextProv
 	const numberOfGuests = optimisticPets ? optimisticPets.length : 0;
 
 	// event handlers and actions
-	const handleChangeActivePetId = (id: string) => {
+	const handleChangeActivePetId = (id: PetComplete['id']) => {
 		setActivePetId(id);
 	};
 
-	const handleAddPet = async (newPet: Omit<Pet, 'id'>) => {
+	const handleAddPet = async (newPet: PetEssentials) => {
 		setOptimisticPets({ action: 'add', payload: newPet });
 		const error = await addPet(newPet); // we only get a response returned if there's an error
 		if (error) {
@@ -67,7 +67,7 @@ export default function PetContextProvider({ petList, children }: PetContextProv
 		}
 	};
 
-	const handleEditPet = async (petId: string, changes: Omit<Pet, 'id'>) => {
+	const handleEditPet = async (petId: PetComplete['id'], changes: PetEssentials) => {
 		setOptimisticPets({ action: 'edit', payload: { id: petId, changes } });
 		const error = await editPet(petId, changes);
 		if (error) {
@@ -76,9 +76,13 @@ export default function PetContextProvider({ petList, children }: PetContextProv
 		}
 	};
 
-	const handleCheckoutPet = async (petId: string) => {
+	const handleCheckoutPet = async (petId: PetComplete['id']) => {
 		setOptimisticPets({ action: 'delete', payload: petId });
-		await deletePet(petId);
+		const error = await deletePet(petId);
+		if (error) {
+			toast.warning(error.message);
+			return;
+		}
 		setActivePetId(null);
 	};
 

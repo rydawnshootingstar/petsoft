@@ -1,11 +1,15 @@
 "use server";
 
-import { Pet } from "@/lib/types";
+import { PetComplete, PetEssentials } from "@/lib/types";
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sleep } from "@/lib/utils";
 
-export async function addPet(petData: Omit<Pet, 'id'>) {
+/*
+    sleep function is used to simulate network delay
+*/
+
+export async function addPet(petData: PetEssentials) {
     //  await sleep(2);
 
     try {
@@ -19,7 +23,7 @@ export async function addPet(petData: Omit<Pet, 'id'>) {
     revalidatePath('/app/dashboard', 'layout');
 }
 
-export async function editPet(petId: string, petData: Omit<Pet, 'id'>) {
+export async function editPet(petId: PetComplete['id'], petData: PetEssentials) {
     // await sleep(2);
 
     try {
@@ -38,7 +42,7 @@ export async function editPet(petId: string, petData: Omit<Pet, 'id'>) {
     revalidatePath('/app/dashboard', 'layout');
 }
 
-export async function deletePet(petId: string) {
+export async function deletePet(petId: PetComplete['id']) {
     // await sleep(2);
 
     try {

@@ -1,12 +1,16 @@
 'use client';
 
 import { usePetContext } from '@/lib/hooks';
-import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import PetFormButton from './PetFormButton';
 //import { useFormState } from 'react-dom';
+
+/*
+	useFormState was implemented to add loading states. We aren't using those anymore since changing to the 
+	optimistic ui. 
+*/
 
 type PetFormProps = {
 	actionType: 'add' | 'edit' | 'checkout';

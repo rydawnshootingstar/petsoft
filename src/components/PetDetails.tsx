@@ -2,10 +2,14 @@
 
 import { usePetContext } from '@/lib/hooks';
 import Image from 'next/image';
-import { Pet } from '@/lib/types';
+import { PetComplete } from '@/lib/types';
 import PetButton from './PetButton';
-import { deletePet } from '@/actions/actions';
-import { useTransition } from 'react';
+// import { useTransition } from 'react';
+
+/*
+	useTransition was used here for a server action called outside a form for non-form loading state. It is unused since moving 
+	to the optimistic ui pattern. 
+*/
 
 export default function PetDetails() {
 	let { activePet } = usePetContext();
@@ -33,12 +37,12 @@ function EmptyView() {
 }
 
 type Props = {
-	activePet: Pet;
+	activePet: PetComplete;
 };
 
 function TopBar({ activePet }: Props) {
 	const { handleCheckoutPet } = usePetContext();
-	const [isPending, startTransition] = useTransition();
+	// const [isPending, startTransition] = useTransition();
 	return (
 		<div className={'flex items-center bg-white px-8 py-5 border-b border-faded-grey'}>
 			<Image
@@ -54,7 +58,7 @@ function TopBar({ activePet }: Props) {
 				<PetButton actionType="edit" />
 				<PetButton
 					actionType="checkout"
-					disabled={isPending}
+					// disabled={isPending}
 					onClick={async () => {
 						await handleCheckoutPet(activePet.id);
 					}}
