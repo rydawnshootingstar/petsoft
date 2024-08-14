@@ -5,6 +5,8 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
+import PetFormButton from './PetFormButton';
+//import { useFormState } from 'react-dom';
 
 type PetFormProps = {
 	actionType: 'add' | 'edit' | 'checkout';
@@ -14,36 +16,64 @@ type PetFormProps = {
 export default function PetForm({ actionType, onFormSubmission }: PetFormProps) {
 	const { activePet, handleAddPet, handleEditPet } = usePetContext();
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+	// Progressive Enhancement method that doesn't need JS at all, we use the action={addPet}
+	//const [error, formAction] = useFormState(addPet, {});
 
-		// our form is uncontrolled so we're using this method instead of setting up state for each field
-		const formData = new FormData(e.currentTarget);
+	// manual method using onSubmit instead of action
+	// const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	// 	e.preventDefault();
 
-		// overriding typescript's default inferrences because it doesn't realize that the inputs were marked as "required" and therefore can't
-		// come in as null
-		const pet = {
-			name: formData.get('name') as string,
-			ownerName: formData.get('ownerName') as string,
-			imageUrl:
-				(formData.get('imageUrl') as string) ||
-				'https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png',
-			age: +(formData.get('age') as string),
-			notes: formData.get('notes') as string,
-		};
+	// 	// our form is uncontrolled so we're using this method instead of setting up state for each field
+	// 	const formData = new FormData(e.currentTarget);
 
-		if (actionType === 'add') {
-			handleAddPet(pet);
-		} else if (actionType === 'edit') {
-			handleEditPet(activePet!.id, pet); // ! tells typescript it will always exist, even though it thinks it's possible it couldn't
-		}
+	// 	// overriding typescript's default inferrences because it doesn't realize that the inputs were marked as "required" and therefore can't
+	// 	// come in as null
+	// 	const pet = {
+	// 		name: formData.get('name') as string,
+	// 		ownerName: formData.get('ownerName') as string,
+	// 		imageUrl:
+	// 			(formData.get('imageUrl') as string) ||
+	// 			'https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png',
+	// 		age: +(formData.get('age') as string),
+	// 		notes: formData.get('notes') as string,
+	// 	};
 
-		onFormSubmission();
+	// 	if (actionType === 'add') {
+	// 		handleAddPet(pet);
+	// 	} else if (actionType === 'edit') {
+	// 		handleEditPet(activePet!.id, pet); // ! tells typescript it will always exist, even though it thinks it's possible it couldn't
+	// 	}
 
-		//console.log(pet);
-	};
+	// 	onFormSubmission();
+
+	// 	//console.log(pet);
+	// };
+
 	return (
-		<form onSubmit={handleSubmit} className="flex flex-col">
+		<form
+			action={async (formData) => {
+				// close dialog immediately (optimistic implementation)
+				onFormSubmission();
+				// clean up and cast formData
+				const petData = {
+					name: formData.get('name') as string,
+					ownerName: formData.get('ownerName') as string,
+					age: Number(formData.get('age')),
+					imageUrl:
+						(formData.get('imageUrl') as string) ||
+						'https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png',
+					notes: formData.get('notes') as string,
+				};
+				if (actionType === 'add') {
+					await handleAddPet(petData);
+				} else if (actionType === 'edit') {
+					await handleEditPet(activePet!.id, petData); // we will always have an activePet so force this
+				}
+				// close dialog after (non optimistic implementation)
+				// onFormSubmission();
+			}}
+			className="flex flex-col"
+		>
 			<div className="space-y-3">
 				<div className="space-y-1">
 					<Label htmlFor="name">Name</Label>
@@ -95,10 +125,7 @@ export default function PetForm({ actionType, onFormSubmission }: PetFormProps) 
 					></Textarea>
 				</div>
 			</div>
-
-			<Button type="submit" className="mt-5 self-end">
-				{actionType === 'add' ? 'Add' : 'Edit'} Pet
-			</Button>
+			<PetFormButton actionType={actionType} />
 		</form>
 	);
 }

@@ -1,6 +1,6 @@
 import PetContextProvider from '@/contexts/PetContextProvider';
 import SearchContextProvider from '@/contexts/SearchContextProvider';
-import { Pet } from '@/lib/types';
+import prisma from '@/lib/db';
 //import StoreProvider from '@/store/StoreProvider';
 
 /* 
@@ -18,11 +18,8 @@ import { Pet } from '@/lib/types';
 */
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-	const petListRes = await fetch('https://bytegrad.com/course-assets/projects/petsoft/api/pets');
-	if (!petListRes.ok) {
-		throw new Error('Could not fetch pet list');
-	}
-	const petList: Pet[] = await petListRes.json();
+	const petList = await prisma.pet.findMany();
+
 	return (
 		<>
 			<SearchContextProvider>

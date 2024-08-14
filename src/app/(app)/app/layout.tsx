@@ -1,6 +1,7 @@
 import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
 import BackgroundPattern from '@/components/BackgroundPattern';
+import { Toaster } from '@/components/ui/sonner';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
 	return (
@@ -11,6 +12,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 				{children}
 				<AppFooter />
 			</div>
+			<Toaster position="top-right" />
 		</>
 	);
 }

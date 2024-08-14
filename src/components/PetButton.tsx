@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import PetForm from './PetForm';
 import { useState } from 'react';
+import { flushSync } from 'react-dom';
 
 // TODO: onClick is currently only used for the checkout button. make a separate checkout button and remove this conditional prop
 // NOTE: asChild prop goes into DialogTrigger to prevent
@@ -15,9 +16,11 @@ type PetButtonProps = {
 	className?: string;
 	actionType: 'add' | 'edit' | 'checkout';
 	onClick?: () => void;
+	disabled?: boolean;
 };
-export default function PetButton({ children, className, actionType, onClick }: PetButtonProps) {
+export default function PetButton({ children, className, actionType, onClick, disabled }: PetButtonProps) {
 	const [formOpen, setFormOpen] = useState(false);
+
 	if (actionType === 'add') {
 		return (
 			<Dialog open={formOpen} onOpenChange={setFormOpen}>
@@ -36,7 +39,9 @@ export default function PetButton({ children, className, actionType, onClick }: 
 					<PetForm
 						actionType={actionType}
 						onFormSubmission={() => {
-							setFormOpen(false);
+							flushSync(() => {
+								setFormOpen(false);
+							});
 						}}
 					/>
 				</DialogContent>
@@ -60,7 +65,9 @@ export default function PetButton({ children, className, actionType, onClick }: 
 					<PetForm
 						actionType={actionType}
 						onFormSubmission={() => {
-							setFormOpen(false);
+							flushSync(() => {
+								setFormOpen(false);
+							});
 						}}
 					/>
 				</DialogContent>
@@ -68,7 +75,7 @@ export default function PetButton({ children, className, actionType, onClick }: 
 		);
 	} else if (actionType === 'checkout') {
 		return (
-			<Button onClick={onClick} variant="secondary" className={cn('', className)}>
+			<Button disabled={disabled} onClick={onClick} variant="secondary" className={cn('', className)}>
 				{children ? children : 'Checkout'}
 			</Button>
 		);

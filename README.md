@@ -32,6 +32,7 @@ modals when the esc key is hit. That stuff is all built in, but shadcn-ui introd
 -   label
 -   input
 -   textarea
+-   sonner
 
 I also learned how to style custom reusable components to accept additional classes for styling, keeping that out of the components themselves and leaving it to individual implementations. This is done using the cn() utility function. This combines class names in Tailwind and if there's a conflict such as adding px-5 when the component is styled for its use case, the px-2 that existed previously will be overridden.
 
@@ -60,3 +61,11 @@ We have a seed file to fill our empty db for testing (prisma/seed.ts). To use it
 
 and to run it, we use
 `npx prisma db seed`
+
+## Server Actions
+
+These do not increase the size of the JS bundle, will be interactive/functional faster. Everything happens in a single network request too.
+
+## Optimistic UI
+
+The useOptimistic() hook was also researched and implemented in this project.

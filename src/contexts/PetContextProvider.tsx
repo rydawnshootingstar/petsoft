@@ -1,6 +1,9 @@
 'use client';
+
 import { Pet } from '@/lib/types';
-import { createContext, useState } from 'react';
+import { createContext, useOptimistic, useState } from 'react';
+import { addPet, deletePet, editPet } from '@/actions/actions';
+import { toast } from 'sonner';
 
 /*
 	We pass a handler function for changing the activePetId instead of the raw setActivePetId to allow for any future functionality we want
@@ -13,56 +16,76 @@ type PetContextProviderProps = {
 };
 
 type TPetContext = {
-	pets: Pet[];
+	optimisticPets: Pet[];
 	activePetId: string | null;
 	activePet: Pet | undefined;
 	numberOfGuests: number;
 	handleChangeActivePetId: (id: string) => void;
-	handleCheckoutPet: (id: string) => void;
-	handleAddPet: (pet: Omit<Pet, 'id'>) => void;
-	handleEditPet: (petId: string, changes: Omit<Pet, 'id'>) => void;
+	handleCheckoutPet: (id: string) => Promise<void>;
+	handleAddPet: (pet: Omit<Pet, 'id'>) => Promise<void>;
+	handleEditPet: (petId: string, changes: Omit<Pet, 'id'>) => Promise<void>;
 };
 
 export const PetContext = createContext<TPetContext | null>(null);
 
 export default function PetContextProvider({ petList, children }: PetContextProviderProps) {
 	// state
-	const [pets, setPets] = useState(petList);
 	const [activePetId, setActivePetId] = useState<string | null>(null);
+	const [optimisticPets, setOptimisticPets] = useOptimistic(petList, (state, { action, payload }) => {
+		switch (action) {
+			case 'add':
+				return [...state, payload];
+			case 'edit':
+				return state.map((pet) => {
+					if (pet.id === payload.id) {
+						return { ...pet, ...payload.changes };
+					}
+					return pet;
+				});
+			case 'delete':
+				return state.filter((pet) => pet.id !== payload);
+			default:
+				return;
+		}
+	});
 
 	// derived state
-	const activePet = pets.find((pet) => pet.id === activePetId);
-	const numberOfGuests = pets ? pets.length : 0;
+	const activePet = optimisticPets.find((pet) => pet.id === activePetId);
+	const numberOfGuests = optimisticPets ? optimisticPets.length : 0;
 
 	// event handlers and actions
 	const handleChangeActivePetId = (id: string) => {
 		setActivePetId(id);
 	};
 
-	const handleCheckoutPet = (id: string) => {
-		setPets((prev) => prev.filter((pet) => pet.id !== id));
-		setActivePetId(null); // not strictly necessary, but just to be safe
+	const handleAddPet = async (newPet: Omit<Pet, 'id'>) => {
+		setOptimisticPets({ action: 'add', payload: newPet });
+		const error = await addPet(newPet); // we only get a response returned if there's an error
+		if (error) {
+			toast.warning(error.message);
+			return;
+		}
 	};
 
-	const handleAddPet = (pet: Omit<Pet, 'id'>) => {
-		setPets((prev) => [...prev, { ...pet, id: Date.now().toString() }]); // this is insane. add to state with a fake ID
+	const handleEditPet = async (petId: string, changes: Omit<Pet, 'id'>) => {
+		setOptimisticPets({ action: 'edit', payload: { id: petId, changes } });
+		const error = await editPet(petId, changes);
+		if (error) {
+			toast.warning(error.message);
+			return;
+		}
 	};
 
-	const handleEditPet = (petId: string, changes: Omit<Pet, 'id'>) => {
-		setPets((prev) =>
-			prev.map((pet) => {
-				if (pet.id === petId) {
-					return { id: petId, ...changes };
-				}
-				return pet;
-			})
-		);
+	const handleCheckoutPet = async (petId: string) => {
+		setOptimisticPets({ action: 'delete', payload: petId });
+		await deletePet(petId);
+		setActivePetId(null);
 	};
 
 	return (
 		<PetContext.Provider
 			value={{
-				pets,
+				optimisticPets,
 				activePetId,
 				activePet,
 				numberOfGuests,

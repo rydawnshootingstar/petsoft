@@ -4,10 +4,10 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 export default function PetList() {
-	const { pets, activePetId, handleChangeActivePetId } = usePetContext();
+	const { optimisticPets, activePetId, handleChangeActivePetId } = usePetContext();
 	const { searchQuery } = useSearchContext();
 
-	const filteredPets = pets.filter((pet) => pet.name.toLowerCase().includes(searchQuery.toLowerCase()));
+	const filteredPets = optimisticPets.filter((pet) => pet.name.toLowerCase().includes(searchQuery.toLowerCase()));
 	return (
 		<ul className="bg-white border-b border-faded-grey">
 			{filteredPets.map((pet, index) => {

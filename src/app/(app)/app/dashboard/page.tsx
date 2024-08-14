@@ -38,7 +38,7 @@ export default async function DashboardHome() {
 					<ContentBlock>
 						<PetList />
 
-						<PetButton className="absolute bottom-4 right-4" actionType="add" />
+						<PetButton className="absolute bottom-4 right-4" actionType={'add'} />
 					</ContentBlock>
 				</div>
 				<div className="md:row-start-1 md:row-span-full md:col-start-2 md:col-span-full">
