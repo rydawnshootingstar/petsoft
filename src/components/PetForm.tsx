@@ -5,7 +5,12 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import PetFormButton from './PetFormButton';
-// NOTE: regular mode
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DEFAULT_PET_IMAGE } from '@/lib/constants';
+import { petFormSchema, TPetForm } from '@/lib/zodSchemas';
+// NOTE: regular mode 1
 // import { useFormState } from 'react-dom';
 
 /*
@@ -20,6 +25,22 @@ type PetFormProps = {
 
 export default function PetForm({ actionType, onFormSubmission }: PetFormProps) {
 	const { activePet, handleAddPet, handleEditPet } = usePetContext();
+	const {
+		register,
+		trigger,
+		getValues,
+		// NOTE: regular mode 2
+		formState: { /* isSubmitting, */ errors },
+	} = useForm<TPetForm>({
+		resolver: zodResolver(petFormSchema),
+		defaultValues: {
+			name: activePet?.name,
+			ownerName: activePet?.ownerName,
+			imageUrl: activePet?.imageUrl,
+			age: activePet?.age,
+			notes: activePet?.notes,
+		},
+	});
 
 	// Progressive Enhancement method that doesn't need JS at all, we use the action={addPet}
 	//const [error, formAction] = useFormState(addPet, {});
@@ -38,7 +59,7 @@ export default function PetForm({ actionType, onFormSubmission }: PetFormProps) 
 	// 		ownerName: formData.get('ownerName') as string,
 	// 		imageUrl:
 	// 			(formData.get('imageUrl') as string) ||
-	// 			'https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png',
+	// 			DEFAULT_PET_IMAGE,
 	// 		age: +(formData.get('age') as string),
 	// 		notes: formData.get('notes') as string,
 	// 	};
@@ -58,18 +79,19 @@ export default function PetForm({ actionType, onFormSubmission }: PetFormProps) 
 		<form
 			action={async (formData) => {
 				// close dialog immediately (optimistic implementation)
+
+				const result = await trigger();
+				if (!result) {
+					return;
+				}
 				// NOTE: optimistic mode
 				onFormSubmission();
-				// clean up and cast formData
-				const petData = {
-					name: formData.get('name') as string,
-					ownerName: formData.get('ownerName') as string,
-					age: Number(formData.get('age')),
-					imageUrl:
-						(formData.get('imageUrl') as string) ||
-						'https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png',
-					notes: formData.get('notes') as string,
-				};
+
+				// automatically convert formData to a valid JS object
+				const petData = getValues();
+				// replace blank entry with default/placeholder image
+				petData.imageUrl = petData.imageUrl || DEFAULT_PET_IMAGE;
+
 				if (actionType === 'add') {
 					await handleAddPet(petData);
 				} else if (actionType === 'edit') {
@@ -84,52 +106,28 @@ export default function PetForm({ actionType, onFormSubmission }: PetFormProps) 
 			<div className="space-y-3">
 				<div className="space-y-1">
 					<Label htmlFor="name">Name</Label>
-					<Input
-						id="name"
-						type="text"
-						name={'name'}
-						required
-						defaultValue={actionType === 'edit' && activePet?.name ? activePet.name : ''}
-					></Input>
+					<Input id="name" {...register('name')}></Input>
+					{errors.name && <p className="text-red-500">{errors.name.message}</p>}
 				</div>
 				<div className="space-y-1">
 					<Label htmlFor="ownerName">Owner Name</Label>
-					<Input
-						id="ownerName"
-						type="text"
-						name={'ownerName'}
-						required
-						defaultValue={actionType === 'edit' && activePet?.ownerName ? activePet.ownerName : ''}
-					></Input>
+					<Input id="ownerName" {...register('ownerName')}></Input>
+					{errors.ownerName && <p className="text-red-500">{errors.ownerName.message}</p>}
 				</div>
 				<div className="space-y-1">
 					<Label htmlFor="age">Age</Label>
-					<Input
-						id="age"
-						type="number"
-						name={'age'}
-						required
-						defaultValue={actionType === 'edit' && activePet?.age ? activePet.age : ''}
-					></Input>
+					<Input id="age" {...register('age')}></Input>
+					{errors.age && <p className="text-red-500">{errors.age.message}</p>}
 				</div>
 				<div className="space-y-1">
 					<Label htmlFor="imageURL">Image URL</Label>
-					<Input
-						id="imageUrl"
-						type="text"
-						name={'imageUrl'}
-						defaultValue={actionType === 'edit' && activePet?.imageUrl ? activePet.imageUrl : ''}
-					></Input>
+					<Input id="imageUrl" {...register('imageUrl')}></Input>
+					{errors.imageUrl && <p className="text-red-500">{errors.imageUrl.message}</p>}
 				</div>
 				<div className="space-y-1">
 					<Label htmlFor="notes">Notes</Label>
-					<Textarea
-						id="notes"
-						rows={3}
-						name={'notes'}
-						required
-						defaultValue={actionType === 'edit' && activePet?.notes ? activePet.notes : ''}
-					></Textarea>
+					<Textarea id="notes" {...register('notes')}></Textarea>
+					{errors.notes && <p className="text-red-500">{errors.notes.message}</p>}
 				</div>
 			</div>
 			<PetFormButton actionType={actionType} />

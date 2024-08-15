@@ -77,3 +77,7 @@ These do not increase the size of the JS bundle, will be interactive/functional 
 ## Optimistic UI
 
 The useOptimistic() hook was also researched and implemented in this project.
+
+## React-Hook-Form & Zod validation
+
+React Hook Form with Zod validation on both client and server
