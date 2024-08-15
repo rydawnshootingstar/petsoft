@@ -1,3 +1,4 @@
+// NOTE: normal mode
 // import { useFormStatus } from 'react-dom';
 import { Button } from './ui/button';
 
@@ -11,6 +12,7 @@ type PetFormButtonProps = {
 };
 
 export default function PetFormButton({ actionType }: PetFormButtonProps) {
+	// NOTE: normal mode
 	// const { pending } = useFormStatus();
 	// disabled={pending}
 	return (

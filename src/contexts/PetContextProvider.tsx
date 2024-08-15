@@ -31,6 +31,7 @@ export const PetContext = createContext<TPetContext | null>(null);
 export default function PetContextProvider({ petList, children }: PetContextProviderProps) {
 	// state
 	const [activePetId, setActivePetId] = useState<string | null>(null);
+	// NOTE: optimistic mode
 	const [optimisticPets, setOptimisticPets] = useOptimistic(petList, (state, { action, payload }) => {
 		switch (action) {
 			case 'add':
@@ -59,6 +60,7 @@ export default function PetContextProvider({ petList, children }: PetContextProv
 	};
 
 	const handleAddPet = async (newPet: PetEssentials) => {
+		// NOTE: optimistic mode
 		setOptimisticPets({ action: 'add', payload: newPet });
 		const error = await addPet(newPet); // we only get a response returned if there's an error
 		if (error) {
@@ -68,8 +70,9 @@ export default function PetContextProvider({ petList, children }: PetContextProv
 	};
 
 	const handleEditPet = async (petId: PetComplete['id'], changes: PetEssentials) => {
+		// NOTE: optimistic mode
 		setOptimisticPets({ action: 'edit', payload: { id: petId, changes } });
-		const error = await editPet(petId, changes);
+		const error = await editPet(petId, changes); // we only get a response returned if there's an error
 		if (error) {
 			toast.warning(error.message);
 			return;
@@ -77,8 +80,9 @@ export default function PetContextProvider({ petList, children }: PetContextProv
 	};
 
 	const handleCheckoutPet = async (petId: PetComplete['id']) => {
+		// NOTE: optimistic mode
 		setOptimisticPets({ action: 'delete', payload: petId });
-		const error = await deletePet(petId);
+		const error = await deletePet(petId); // we only get a response returned if there's an error
 		if (error) {
 			toast.warning(error.message);
 			return;

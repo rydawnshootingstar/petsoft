@@ -5,7 +5,8 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import PetFormButton from './PetFormButton';
-//import { useFormState } from 'react-dom';
+// NOTE: regular mode
+// import { useFormState } from 'react-dom';
 
 /*
 	useFormState was implemented to add loading states. We aren't using those anymore since changing to the 
@@ -57,6 +58,7 @@ export default function PetForm({ actionType, onFormSubmission }: PetFormProps) 
 		<form
 			action={async (formData) => {
 				// close dialog immediately (optimistic implementation)
+				// NOTE: optimistic mode
 				onFormSubmission();
 				// clean up and cast formData
 				const petData = {
@@ -74,6 +76,7 @@ export default function PetForm({ actionType, onFormSubmission }: PetFormProps) 
 					await handleEditPet(activePet!.id, petData); // we will always have an activePet so force this
 				}
 				// close dialog after (non optimistic implementation)
+				// NOTE: regular mode
 				// onFormSubmission();
 			}}
 			className="flex flex-col"

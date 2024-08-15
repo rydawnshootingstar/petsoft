@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils';
 export default function PetList() {
 	const { optimisticPets, activePetId, handleChangeActivePetId } = usePetContext();
 	const { searchQuery } = useSearchContext();
-
 	const filteredPets = optimisticPets.filter((pet) => pet.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
 	return (
 		<ul className="bg-white border-b border-faded-grey">
 			{filteredPets.map((pet, index) => {
@@ -22,7 +22,7 @@ export default function PetList() {
 								}
 							)}
 						>
-							{/* Next really uses the width and height values to set a ratio for the image. To actually use a fixed height, add it to the css */}
+							{/* NOTE: Next really uses the width and height values to set a ratio for the image. To actually use a fixed height, add it to the css */}
 							<Image
 								src={pet.imageUrl}
 								alt="Pet Image"
