@@ -20,7 +20,7 @@ export default function AppHeader() {
 	const activePathname = usePathname();
 	return (
 		<header className="flex justify-between items-center border-b border-white/4 py-2">
-			<Logo />
+			<Logo size="20%" />
 			<nav>
 				<ul className="flex gap-2 text-xs">
 					{routes.map(({ path, label }, index) => {
