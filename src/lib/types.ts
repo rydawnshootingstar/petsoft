@@ -6,7 +6,7 @@ import { Pet } from "@prisma/client";
     If the model is changed, it will still create problems, but it's better to have them be typescript problems.
 */
 
-export type PetEssentials = Omit<Pet, 'id' | 'createdAt' | 'updatedAt'>;
+export type PetEssentials = Omit<Pet, 'id' | 'createdAt' | 'updatedAt' | 'userId'>;
 export type PetComplete = Pet;
 
 // currently not used

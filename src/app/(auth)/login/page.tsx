@@ -6,7 +6,7 @@ export default function LogInPage() {
 	return (
 		<main>
 			<SectionHeader className="text-center mb-2">Log In</SectionHeader>
-			<AuthForm />
+			<AuthForm type="login" />
 			<p className="mt-4">
 				No account yet?{' '}
 				<Link className="text-zinc-600 mt-6 font-medium" href="/signup">

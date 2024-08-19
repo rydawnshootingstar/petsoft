@@ -1,14 +1,44 @@
 "use server";
 
-import { PetComplete, PetEssentials } from "@/lib/types";
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sleep } from "@/lib/utils";
 import { petFormSchema, petIdSchema } from "@/lib/zodSchemas";
+import { signIn, signOut } from "@/lib/auth";
+import bcrypt from 'bcryptjs';
 
 /*
     sleep function is used to simulate network delay
 */
+
+/*                  USER ACTIONS                 */
+export async function signUp(authData: FormData) {
+    const authDataFormatted = Object.fromEntries(authData.entries());
+    const hashedPassword = await bcrypt.hash(authDataFormatted.password as string, 10);
+
+    await prisma.user.create({
+        data: {
+            email: authDataFormatted.email,
+            hashedPassword
+        }
+    });
+
+    await signIn('credentials', authDataFormatted);
+
+
+}
+
+export async function logIn(authData: FormData) {
+    const authDataFormatted = Object.fromEntries(authData.entries());
+    await signIn('credentials', authDataFormatted);
+
+}
+
+export async function LogOut() {
+    await signOut({ redirectTo: '/' });
+}
+
+/*                  PET ACTIONS                 */
 
 export async function addPet(petData: unknown) {
     //  await sleep(2);
@@ -69,3 +99,4 @@ export async function deletePet(petId: unknown) {
 
     revalidatePath('/app/dashboard', 'layout');
 }
+

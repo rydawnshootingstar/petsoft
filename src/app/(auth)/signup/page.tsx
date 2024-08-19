@@ -6,7 +6,7 @@ export default function SignUpPage() {
 	return (
 		<main>
 			<SectionHeader className="text-center mb-2">Sign Up</SectionHeader>
-			<AuthForm />
+			<AuthForm type="signup" />
 			<p className="mt-4">
 				Already have an account?{' '}
 				<Link className="text-zinc-600 mt-6 font-medium" href="/login">

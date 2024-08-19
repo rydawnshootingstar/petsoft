@@ -1,14 +1,32 @@
 import ContentBlock from '@/components/ContentBlock';
+import LogoutButton from '@/components/LogoutButton';
 import SectionHeader from '@/components/SectionHeader';
-import { Button } from '@/components/ui/button';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
-export default function Account() {
+/*
+		On a server component, we want to import the auth() function and grab the session. 
+
+		Even though we theoretically would never get to this page without our middleware checking for a user, it's a good idea
+		to do a session check in server components. 
+
+		The Logout button was created because we need it to be interactive (a client component) but would prefer the rest of
+		the page to be a server component. 
+*/
+
+export default async function Account() {
+	const session = await auth();
+
+	if (!session?.user) {
+		redirect('/login');
+	}
+
 	return (
 		<main>
 			<SectionHeader className={'my-8 text-white'}>Your Account</SectionHeader>
 			<ContentBlock className={'h-[500px] flex justify-center items-center flex-col gap-5'}>
-				<p className="">Logged in as ...</p>
-				<Button>Log Out</Button>
+				<p className="">Logged in as {session?.user.email}</p>
+				<LogoutButton></LogoutButton>
 			</ContentBlock>
 		</main>
 	);
