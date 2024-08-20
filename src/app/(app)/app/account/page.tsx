@@ -1,8 +1,7 @@
 import ContentBlock from '@/components/ContentBlock';
 import LogoutButton from '@/components/LogoutButton';
 import SectionHeader from '@/components/SectionHeader';
-import { auth } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+import { sessionCheck } from '@/lib/serverOnlyUtils';
 
 /*
 		On a server component, we want to import the auth() function and grab the session. 
@@ -15,17 +14,14 @@ import { redirect } from 'next/navigation';
 */
 
 export default async function Account() {
-	const session = await auth();
-
-	if (!session?.user) {
-		redirect('/login');
-	}
+	// authentication check. redirects to /login if not found
+	const session = await sessionCheck();
 
 	return (
 		<main>
 			<SectionHeader className={'my-8 text-white'}>Your Account</SectionHeader>
 			<ContentBlock className={'h-[500px] flex justify-center items-center flex-col gap-5'}>
-				<p className="">Logged in as {session?.user.email}</p>
+				<p className="">Logged in as {session?.user?.email}</p>
 				<LogoutButton></LogoutButton>
 			</ContentBlock>
 		</main>

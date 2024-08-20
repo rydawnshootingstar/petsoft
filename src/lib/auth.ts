@@ -3,6 +3,8 @@ import { NextRequest } from 'next/server';
 import Credentials from 'next-auth/providers/credentials';
 import prisma from './db';
 import bcrypt from 'bcryptjs';
+import { getUserByEmail } from './serverOnlyUtils';
+import { authSchema, TAuth } from './zodSchemas';
 /*
     We're using the v5 beta of next/auth: https://authjs.dev/getting-started/migrating-to-v5
 */
@@ -17,8 +19,15 @@ const config = {
         Credentials({
             // this runs on every login attempt
             authorize: async (credentials) => {
-                const { email, password } = credentials;
-                const user = await prisma.user.findUnique({ where: { email } });
+                // validation - necessary to do here instead of in actions.ts to fix typescript errors
+                const validatedAuthData = authSchema.safeParse(credentials);
+                if (!validatedAuthData.success) {
+                    return null;
+                }
+
+                const { email, password } = validatedAuthData.data;
+
+                const user = await getUserByEmail(email);
                 if (!user) {
                     console.log("invalid email");
                     return null;
@@ -65,5 +74,5 @@ const config = {
     }
 } satisfies NextAuthConfig;
 // auth is what will expose the user object. import this function wherever we need the logged in user on a server component
-export const { auth, signIn, signOut } = NextAuth(config);
+export const { auth, signIn, signOut, handlers: { GET, POST } } = NextAuth(config);
 

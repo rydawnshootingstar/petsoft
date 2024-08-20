@@ -1,8 +1,6 @@
 import PetContextProvider from '@/contexts/PetContextProvider';
 import SearchContextProvider from '@/contexts/SearchContextProvider';
-import prisma from '@/lib/db';
-import { auth } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+import { getPetsByUserId, sessionCheck } from '@/lib/serverOnlyUtils';
 //import StoreProvider from '@/store/StoreProvider';
 
 /* 
@@ -19,14 +17,18 @@ import { redirect } from 'next/navigation';
 
 */
 
+/* 
+	ISSUE: if a user logs in then tries to add or edit a pet, the path isn't properly revalidated(?). It works upon refresh. 
+	The server action is actually not being reached at all? it does trigger a GET of /app/dashboard in the console. There are no errors
+	anywhere
+*/
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-	const session = await auth();
+	// authentication check. redirects to /login if not found
+	const session = await sessionCheck();
 
-	if (!session?.user) {
-		redirect('/login');
-	}
-
-	const petList = await prisma.pet.findMany({ where: { userId: session?.user.id } });
+	const petList = await getPetsByUserId(session.user.id);
+	//const petList = await prisma.pet.findMany({ where: { userId: session.user.id } });
 
 	return (
 		<>

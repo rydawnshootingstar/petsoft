@@ -6,7 +6,6 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import PetFormButton from './PetFormButton';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DEFAULT_PET_IMAGE } from '@/lib/constants';
 import { petFormSchema, TPetForm } from '@/lib/zodSchemas';
@@ -119,7 +118,7 @@ export default function PetForm({ actionType, onFormSubmission }: PetFormProps) 
 				</div>
 				<div className="space-y-1">
 					<Label htmlFor="age">Age</Label>
-					<Input id="age" {...register('age')}></Input>
+					<Input id="age" type="number" {...register('age')}></Input>
 					{errors.age && <p className="text-red-500">{errors.age.message}</p>}
 				</div>
 				<div className="space-y-1">

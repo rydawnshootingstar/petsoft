@@ -82,4 +82,6 @@ The useOptimistic() hook was also researched and implemented in this project.
 
 React Hook Form with Zod validation on both client and server
 
-## JWT Auth and sessions
+## Next-Auth
+
+Next-auth is powering our JWT session tokens. They're http-only and same-site only so they are inaccessible to the client.

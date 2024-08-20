@@ -3,36 +3,54 @@
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sleep } from "@/lib/utils";
-import { petFormSchema, petIdSchema } from "@/lib/zodSchemas";
+import { authSchema, petFormSchema, petIdSchema } from "@/lib/zodSchemas";
 import { auth, signIn, signOut } from "@/lib/auth";
 import bcrypt from 'bcryptjs';
 import { redirect } from "next/navigation";
+import { getPetById, sessionCheck } from "@/lib/serverOnlyUtils";
 
 /*
     sleep function is used to simulate network delay
 */
 
 /*                  USER ACTIONS                 */
-export async function signUp(authData: FormData) {
-    const authDataFormatted = Object.fromEntries(authData.entries());
-    const hashedPassword = await bcrypt.hash(authDataFormatted.password as string, 10);
+export async function signUp(authData: unknown) {
+    // type check
+    if (!(authData instanceof FormData)) {
+        return { message: "Invalid form data." }
+    }
 
+    // conver to normal JS object for zod
+    const authFormDataEntries = Object.fromEntries(authData.entries());
+
+    // validation
+    const validatedAuthData = authSchema.safeParse(authFormDataEntries);
+    if (!validatedAuthData.success) {
+        return { message: "Invalid form data." }
+    }
+
+    // hashing
+    const hashedPassword = await bcrypt.hash(validatedAuthData.data.password, 10);
+
+    // db action
     await prisma.user.create({
         data: {
-            email: authDataFormatted.email,
+            email: validatedAuthData.data.email,
             hashedPassword
         }
     });
 
-    await signIn('credentials', authDataFormatted);
-
-
+    // next-auth action
+    await signIn('credentials', authData);
 }
 
-export async function logIn(authData: FormData) {
-    const authDataFormatted = Object.fromEntries(authData.entries());
-    await signIn('credentials', authDataFormatted);
-
+export async function logIn(authData: unknown) {
+    // type check
+    if (!(authData instanceof FormData)) {
+        return { message: "Invalid form data." }
+    }
+    // next-auth action
+    await signIn('credentials', authData);
 }
 
 export async function LogOut() {
@@ -44,16 +62,16 @@ export async function LogOut() {
 export async function addPet(petData: unknown) {
     //  await sleep(2);
 
-    const session = await auth();
-    if (!session?.user) {
-        redirect("/login");
-    }
+    // authentication check. redirects to /login if not found
+    const session = await sessionCheck();
 
+    // validation
     const validatedPetData = petFormSchema.safeParse(petData);
     if (!validatedPetData.success) {
         return { message: "Invalid pet data was recieved by the server." }
     }
 
+    // db action
     try {
         await prisma?.pet.create({
             data: { ...validatedPetData.data, user: { connect: { id: session.user.id } } }
@@ -67,12 +85,29 @@ export async function addPet(petData: unknown) {
 
 export async function editPet(petId: unknown, petData: unknown) {
     // await sleep(2);
+
+    // authentication check. redirects to /login if not found
+    const session = await sessionCheck();
+
+    // validation
     const validatedPetData = petFormSchema.safeParse(petData);
     const validatedPetId = petIdSchema.safeParse(petId);
     if (!validatedPetData.success || !validatedPetId.success) {
         return { message: "Invalid pet data was recieved by the server." }
     }
 
+    // authorization check
+    let requestedPet;
+    try {
+        requestedPet = await getPetById(validatedPetId.data)
+    } catch (error) {
+        return { message: "There was a problem finding your pet." }
+    }
+    if (requestedPet!.userId !== session.user?.id) {
+        return { message: "That's not your pet." }
+    }
+
+    // db action
     try {
         await prisma.pet.update({
             where: {
@@ -92,11 +127,8 @@ export async function editPet(petId: unknown, petData: unknown) {
 export async function deletePet(petId: unknown) {
     // await sleep(2);
 
-    // authentication check
-    const session = await auth();
-    if (!session?.user) {
-        redirect("/login");
-    }
+    // authentication check. redirects to /login if not found
+    const session = await sessionCheck();
 
     // validation
     const validatedPetId = petIdSchema.safeParse(petId);
@@ -111,7 +143,7 @@ export async function deletePet(petId: unknown) {
     } catch (error) {
         return { message: "There was a problem finding your pet." }
     }
-    if (requestedPet!.userId !== session.user.id) {
+    if (requestedPet!.userId !== session.user?.id) {
         return { message: "That's not your pet." }
     }
 
