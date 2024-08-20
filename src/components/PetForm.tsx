@@ -33,13 +33,16 @@ export default function PetForm({ actionType, onFormSubmission }: PetFormProps) 
 		formState: { /* isSubmitting, */ errors },
 	} = useForm<TPetForm>({
 		resolver: zodResolver(petFormSchema),
-		defaultValues: {
-			name: activePet?.name,
-			ownerName: activePet?.ownerName,
-			imageUrl: activePet?.imageUrl,
-			age: activePet?.age,
-			notes: activePet?.notes,
-		},
+		defaultValues:
+			actionType === 'edit'
+				? {
+						name: activePet?.name,
+						ownerName: activePet?.ownerName,
+						imageUrl: activePet?.imageUrl,
+						age: activePet?.age,
+						notes: activePet?.notes,
+				  }
+				: undefined,
 	});
 
 	// Progressive Enhancement method that doesn't need JS at all, we use the action={addPet}

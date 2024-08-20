@@ -10,8 +10,8 @@ export const petFormSchema = z
         name: z.string().trim().min(1, { message: 'Name is required' }).max(100),
         ownerName: z.string().trim().min(1, { message: 'Owner Name is required' }).max(100),
         imageUrl: z.union([z.literal(''), z.string().trim().url({ message: 'Image url must be a valid url' })]),
-        age: z.coerce.number().int().positive().max(200), // comes in as string by default
-        notes: z.union([z.literal(''), z.string().trim().max(1000)]),
+        age: z.coerce.number().int().positive().max(200, { message: 'Pet must be born, cannot be over 200 years old' }), // comes in as string by default
+        notes: z.union([z.literal(''), z.string().trim().max(1000, { message: 'Your name is longer than 100 characters? Use a nickname!' })]),
     })
     .transform((data) => ({
         ...data,

@@ -1,6 +1,8 @@
 import PetContextProvider from '@/contexts/PetContextProvider';
 import SearchContextProvider from '@/contexts/SearchContextProvider';
 import prisma from '@/lib/db';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 //import StoreProvider from '@/store/StoreProvider';
 
 /* 
@@ -18,7 +20,13 @@ import prisma from '@/lib/db';
 */
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-	const petList = await prisma.pet.findMany();
+	const session = await auth();
+
+	if (!session?.user) {
+		redirect('/login');
+	}
+
+	const petList = await prisma.pet.findMany({ where: { userId: session?.user.id } });
 
 	return (
 		<>

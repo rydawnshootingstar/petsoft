@@ -4,8 +4,7 @@ import Credentials from 'next-auth/providers/credentials';
 import prisma from './db';
 import bcrypt from 'bcryptjs';
 /*
-    We're using the v5 beta: https://authjs.dev/getting-started/migrating-to-v5
-
+    We're using the v5 beta of next/auth: https://authjs.dev/getting-started/migrating-to-v5
 */
 
 const config = {
@@ -50,6 +49,18 @@ const config = {
                 return true;
             }
 
+        },
+        // add additional info to the JWT before it's created
+        jwt: ({ token, user }) => {
+            if (user) {
+                token.userId = user.id;
+            }
+            return token;
+        },
+        // add info to be present on the session object on client
+        session: ({ session, token }) => {
+            session.user.id = token.userId;     // default token type doesn't take in a string called userId. Overridden in /lib/nextAuth.d.ts
+            return session;
         }
     }
 } satisfies NextAuthConfig;
