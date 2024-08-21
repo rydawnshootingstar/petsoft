@@ -4,6 +4,8 @@ import { Pet } from "@prisma/client";
     Our globally reused types are driven by our prisma model. Changes made to the model will persist automatically on our types. 
 
     If the model is changed, it will still create problems, but it's better to have them be typescript problems.
+
+    Update PetEssentials whenever you update the schema. 
 */
 
 export type PetEssentials = Omit<Pet, 'id' | 'createdAt' | 'updatedAt' | 'userId'>;

@@ -1,12 +1,16 @@
-import NextAuth, { NextAuthConfig, Session } from 'next-auth';
-import { NextRequest } from 'next/server';
+import NextAuth, { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import prisma from './db';
 import bcrypt from 'bcryptjs';
 import { getUserByEmail } from './serverOnlyUtils';
-import { authSchema, TAuth } from './zodSchemas';
+import { authSchema } from './zodSchemas';
+
 /*
     We're using the v5 beta of next/auth: https://authjs.dev/getting-started/migrating-to-v5
+
+    When next-auth's signIn does a redirect, it's actually throwing an error. We deal with this in actions.ts
+
+    ISSUE: in the authorized callback, our redirects "work". The user is redirected to /app/dashboard, but the router
+    doesn't contain the correct url. It still thinks it's /login or /signup. This is fixed within PetList.tsx. 
 */
 
 const config = {
@@ -52,7 +56,8 @@ const config = {
                 return false;
             }
             if (isTryongToAccessAuth && isLoggedIn) {
-                return Response.redirect(new URL('/app/dashboard', request.nextUrl));     // redirects here must be to an absolute url
+                const redirectUrl = new URL('/app/dashboard', request.nextUrl);
+                return Response.redirect(redirectUrl);     // redirects here must be to an absolute url
             }
             else {
                 return true;

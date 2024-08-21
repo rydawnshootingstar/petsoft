@@ -4,17 +4,26 @@ import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sleep } from "@/lib/utils";
 import { authSchema, petFormSchema, petIdSchema } from "@/lib/zodSchemas";
-import { auth, signIn, signOut } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
 import bcrypt from 'bcryptjs';
-import { redirect } from "next/navigation";
+
 import { getPetById, sessionCheck } from "@/lib/serverOnlyUtils";
+import { Prisma } from "@prisma/client";
+import { AuthError } from "next-auth";
+
 
 /*
-    sleep function is used to simulate network delay
+    Sleep function is used to simulate network delay for dev environment
+
+    When next-auth's signIn does a redirect, it's actually throwing an error. If we invoke it in a try catch block, that error will be 
+    caught. We need to throw it again.
+
 */
 
 /*                  USER ACTIONS                 */
-export async function signUp(authData: unknown) {
+export async function signUp(prevState: unknown, authData: unknown) {   // prevState comes in from useFormState. We don't need it, but we need to satisfy TS
+    await sleep(2);
+
     // type check
     if (!(authData instanceof FormData)) {
         return { message: "Invalid form data." }
@@ -33,24 +42,58 @@ export async function signUp(authData: unknown) {
     const hashedPassword = await bcrypt.hash(validatedAuthData.data.password, 10);
 
     // db action
-    await prisma.user.create({
-        data: {
-            email: validatedAuthData.data.email,
-            hashedPassword
+    try {
+        await prisma.user.create({
+            data: {
+                email: validatedAuthData.data.email,
+                hashedPassword
+            }
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === "P2002") {
+                return { message: "This email is already in use." }
+            }
         }
-    });
+        return { message: "There was a problem creating this account." }
+    }
 
     // next-auth action
-    await signIn('credentials', authData);
+    try {
+        await signIn('credentials', authData);
+    } catch (error) {
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case 'CredentialsSignin': { return { message: "Invalid Credentials." } };
+                default: { return { message: "Could not sign in." } }
+            }
+        }
+        throw error; // redirects from auth.ts throw error. rethrow it to actually continue
+        // return { message: "There was a problem logging you in. This shouldn't happen, if the problem persists, please contact support." }
+    }
 }
 
-export async function logIn(authData: unknown) {
+export async function logIn(prevState: unknown, authData: unknown) {
+    await sleep(2);
+
     // type check
     if (!(authData instanceof FormData)) {
         return { message: "Invalid form data." }
     }
     // next-auth action
-    await signIn('credentials', authData);
+    try {
+        await signIn('credentials', authData);
+    } catch (error) {
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case 'CredentialsSignin': { return { message: "Invalid Credentials." } };
+                default: { return { message: "Could not sign in." } }
+            }
+        }
+        throw error; // redirects from auth.ts throw error. rethrow it to actually continue
+        // return { message: "There was a problem logging you in. This shouldn't happen, if the problem persists, please contact support." }
+    }
+
 }
 
 export async function LogOut() {
@@ -85,6 +128,7 @@ export async function addPet(petData: unknown) {
 
 export async function editPet(petId: unknown, petData: unknown) {
     // await sleep(2);
+    console.log('action reached');
 
     // authentication check. redirects to /login if not found
     const session = await sessionCheck();

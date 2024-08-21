@@ -24,6 +24,7 @@ type PetFormProps = {
 
 export default function PetForm({ actionType, onFormSubmission }: PetFormProps) {
 	const { activePet, handleAddPet, handleEditPet } = usePetContext();
+
 	const {
 		register,
 		trigger,
