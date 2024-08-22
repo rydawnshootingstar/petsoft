@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 /*
 	ISSUE: Router check and push are here because the redirect attempted in auth.ts only partially works. They're 
 	redirected but the URL isn't properly replaced, and so a newly logged in user can't use the server action. It POSTS
-	to /login or /signup with doesn't work. 
+	to /login or /signup with doesn't work. Don't render PetList outside of the dashboard without changing. 
 */
 
 export default function PetList() {
@@ -17,7 +17,7 @@ export default function PetList() {
 	const router = useRouter();
 	useEffect(() => {
 		if (!path.includes('dashboard')) {
-			return router.push('/app/dashboard');
+			router.push('/app/dashboard');
 		}
 	}, []);
 	const { optimisticPets, activePetId, handleChangeActivePetId } = usePetContext();
