@@ -50,30 +50,49 @@ const config = {
         // this runs on every request that matches our middleware pattern
         authorized: ({ auth, request }) => {
             const isLoggedIn = Boolean(auth?.user);
+            const hasAccess = Boolean(auth?.user.hasAccess);
             const isTryingToAccessApp = request.nextUrl.pathname.includes('app');
-            const isTryongToAccessAuth = request.nextUrl.pathname.includes('login') || request.nextUrl.pathname.includes('signup');
+            const isTryingToAccessAuth = request.nextUrl.pathname.includes('login') || request.nextUrl.pathname.includes('signup');
+            const redirectUrlForDashboard = new URL('/app/dashboard', request.nextUrl);
+            const redirectUrlForPayment = new URL('/payment', request.nextUrl);
+
             if (isTryingToAccessApp && !isLoggedIn) {
                 return false;
             }
-            if (isTryongToAccessAuth && isLoggedIn) {
-                const redirectUrl = new URL('/app/dashboard', request.nextUrl);
-                return Response.redirect(redirectUrl);     // redirects here must be to an absolute url
+            if (isTryingToAccessApp && isLoggedIn && !hasAccess) {
+                return Response.redirect(redirectUrlForPayment);        // redirects here must be to an absolute url
             }
+            if (isTryingToAccessAuth && isLoggedIn && !hasAccess) {
+                return Response.redirect(redirectUrlForPayment);        // redirects here must be to an absolute url
+            }
+            if (isTryingToAccessAuth && isLoggedIn && hasAccess) {
+                return Response.redirect(redirectUrlForDashboard);      // redirects here must be to an absolute url
+            }
+
             else {
                 return true;
             }
 
         },
         // add additional info to the JWT before it's created
-        jwt: ({ token, user }) => {
+        jwt: async ({ token, user, trigger }) => {
             if (user) {
-                token.userId = user.id;
+                token.userId = user.id!;
+                token.hasAccess = user.hasAccess;
+                token.email = user.email!;
+            }
+            if (trigger === 'update') {
+                const userFromDb = await getUserByEmail(token.email);
+                if (userFromDb) {
+                    token.hasAccess = userFromDb.hasAccess;
+                }
             }
             return token;
         },
         // add info to be present on the session object on client
         session: ({ session, token }) => {
-            session.user.id = token.userId;     // default token type doesn't take in a string called userId. Overridden in /lib/nextAuth.d.ts
+            session.user.id = token.userId;             // default token type doesn't take in a string called userId. Overridden in /lib/nextAuth.d.ts
+            session.user.hasAccess = token.hasAccess;   // default token type doesn't take in a bool called hasAccess. Overridden in /lib/nextAuth.d.ts
             return session;
         }
     }

@@ -2,16 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Logo from '../components/logo';
 import { Button } from '../components/ui/button';
+import previewPic from '../../public/petsoft-preview.png';
 
 export default function HomePage() {
 	return (
 		<main className="min-h-screen flex p-10 flex-col xl:flex-row items-center justify-center gap-10">
-			<Image
-				src="https://bytegrad.com/course-assets/react-nextjs/petsoft-preview.png"
-				alt="Catopia Preview"
-				width={519}
-				height={472}
-			/>
+			<Image src={previewPic} alt="PetSoft Preview" width={519} height={472} />
 			<div>
 				<Logo size={'100%'} />
 				<h1 className="text-darker-grey text-5xl font-semibold my-6 max-w-[500px]">

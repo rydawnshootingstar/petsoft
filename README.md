@@ -85,3 +85,7 @@ React Hook Form with Zod validation on both client and server
 ## Next-Auth
 
 Next-auth is powering our JWT session tokens. They're http-only and same-site only so they are inaccessible to the client.
+
+## Payments
+
+Stripe payments (through the payment form with redirect) for payments.
