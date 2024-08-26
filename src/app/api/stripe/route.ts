@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY as string);
 
     // veryify that webhook comes from Stripe
-    let event;
+    let event: Stripe.Event;
     try {
         event = stripe.webhooks.constructEvent(bodyData, signature, process.env.STRIPE_WEBHOOK_SECRET as string);
     } catch (error) {
@@ -23,14 +23,19 @@ export async function POST(req: Request) {
 
     // fulfill order
 
-    async function handleCheckoutSessionCompleted(event) {
-        await prisma.user.update({
-            where: {
-                email: event.data.object.customer_email
-            }, data: {
-                hasAccess: true
-            }
-        })
+    // TODO: set up webhook and inspect how this looks. look for customer object with email attribute
+    async function handleCheckoutSessionCompleted(event: Stripe.CheckoutSessionCompletedEvent) {
+        try {
+            await prisma.user.update({
+                where: {
+                    email: event.data.object.customer_email!
+                }, data: {
+                    hasAccess: true
+                }
+            })
+        } catch (error) {
+            return new Response(`Webhook Error: ${error}`, { status: 400 })
+        }
     }
 
     switch (event.type) {
