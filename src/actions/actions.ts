@@ -212,7 +212,7 @@ export async function createCheckoutSession() {
     const session = await sessionCheck();
 
     const checkoutSession = await stripe.checkout.sessions.create({
-        customer_email: session.user.email,
+        customer_email: session.user.email!,
         line_items: [{
             price: process.env.STRIPE_PETSOFT_PRICE_ID,
             quantity: 1
@@ -223,5 +223,8 @@ export async function createCheckoutSession() {
 
     });
 
-    redirect(checkoutSession.url);
+    if (checkoutSession.url) {
+        redirect(checkoutSession.url);
+    }
+
 }
