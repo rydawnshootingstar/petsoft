@@ -46,7 +46,7 @@ export default function PetContextProvider({ petList, children }: PetContextProv
 			case 'delete':
 				return state.filter((pet) => pet.id !== payload);
 			default:
-				return;
+				return state;
 		}
 	});
 
