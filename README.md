@@ -1,6 +1,6 @@
 # PetSoft
 
-This is an app for a fictional pet daycare platform. The purpose of building this was to get more comfortable with the newer features of NextJS (14), introduce myself to Tailwind and Typescript, newer hooks like useOptimistic, useFormStatus, useTransition, and try out some popular packages/libraries like shadcn/ui and Zod, and check out Stripe's payment form using redirects and a webhook listener route. It's a relatively cutting edge collection of libraries and patterns, all of which were new to me. The app itself is of course quite barebones, but under the hood is pretty robust.
+This is an app for a fictional pet daycare platform. The purpose of building this was to get more comfortable with the newer features of NextJS (14), introduce myself to Tailwind and Typescript, newer hooks like useOptimistic, useFormStatus, useTransition, and try out some popular packages/libraries like Next-Auth, shadcn/ui, and Zod, as well as check out Stripe's payment form using redirects and a webhook listener route. It's a relatively cutting edge collection of libraries and patterns, all of which were new to me. The app itself is of course quite barebones, but under the hood it's pretty robust.
 
 Check it out at
 
@@ -18,7 +18,7 @@ Everything is typed.
 ### Styling
 
 -   TailwindCSS
--   cn()/twMerge for combining class names for Tailwind
+-   cn/twMerge for combining class names for Tailwind
     -   dynamic styling & making reusable components that can be styled at the implementation level
 
 ### UI Libraries & Patterns
@@ -39,14 +39,15 @@ Everything is typed.
 
 ### Authentication
 
--   Next-Auth v5 (credential provider)
-    -   HTTP Only JWTs
+-   Next-Auth
+    -   JWT strategy
+    -   Credential provider
 
 ### Database
 
 -   Prisma ORM
--   dev db: sqlite (local)
--   prod db: postgres (cloud)
+-   prod db: postgres (vercel cloud)
+    -   dev db: sqlite (local)
 
 ### Payments
 
@@ -62,7 +63,8 @@ Everything is typed.
 -   focusing on always using the most relevant HTML tags, using fewer divs
 -   reducing potential for runtime errors
 -   keeping as many thing server components as possible
--   wrangling the next/auth aka auth.js lib
+-   wrangling the next-auth aka auth.js lib
+-   purging cached data when needed
 
 ## Conclusions
 
