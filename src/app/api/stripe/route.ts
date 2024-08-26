@@ -8,16 +8,14 @@ import Stripe from 'stripe';
 
 export async function POST(req: Request) {
     const bodyData = await req.text();
-    const signature = req.headers.get('stripe-signature');
+    const signature = req.headers.get('stripe-signature') as string;
 
-    const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY);
-
-    console.log(bodyData);
+    const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY as string);
 
     // veryify that webhook comes from Stripe
     let event;
     try {
-        event = stripe.webhooks.constructEvent(bodyData, signature, process.env.STRIPE_WEBHOOK_SECRET);
+        event = stripe.webhooks.constructEvent(bodyData, signature, process.env.STRIPE_WEBHOOK_SECRET as string);
     } catch (error) {
         console.error('webhook verification failed', error);
         return Response.json(null, { status: 400 });
