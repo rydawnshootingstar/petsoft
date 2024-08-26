@@ -14,7 +14,7 @@ import { redirect } from "next/navigation";
 
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY);
+const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY as string);
 
 
 /*
