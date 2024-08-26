@@ -9,8 +9,9 @@ import { authSchema } from './zodSchemas';
 
     When next-auth's signIn does a redirect, it's actually throwing an error. We deal with this in actions.ts
 
-    ISSUE: in the authorized callback, our redirects "work". The user is redirected to /app/dashboard, but the router
-    doesn't contain the correct url. It still thinks it's /login or /signup. This is fixed within PetList.tsx. 
+    ISSUE: in the authorized callback, our redirects "work". The user is redirected to /app/dashboard for example, but the router
+    doesn't contain the correct url. It still thinks it's /login or /signup. This is fixed within PetList.tsx for dashboard
+    and the payment page for payments. 
 */
 
 const config = {

@@ -27,7 +27,7 @@ const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY);
 
 /*                  USER ACTIONS                 */
 export async function signUp(prevState: unknown, authData: unknown) {   // prevState comes in from useFormState. We don't need it, but we need to satisfy TS
-    await sleep(2);
+    // await sleep(2);
 
     // type check
     if (!(authData instanceof FormData)) {
@@ -79,7 +79,7 @@ export async function signUp(prevState: unknown, authData: unknown) {   // prevS
 }
 
 export async function logIn(prevState: unknown, authData: unknown) {
-    await sleep(2);
+    // await sleep(2);
 
     // type check
     if (!(authData instanceof FormData)) {
@@ -133,7 +133,6 @@ export async function addPet(petData: unknown) {
 
 export async function editPet(petId: unknown, petData: unknown) {
     // await sleep(2);
-    console.log('action reached');
 
     // authentication check. redirects to /login if not found
     const session = await sessionCheck();

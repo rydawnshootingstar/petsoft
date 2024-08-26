@@ -1,91 +1,72 @@
 # PetSoft
 
-This is an app for a fictional pet daycare platform. The purpose is to get more comfortable with the newer features of NextJS (14), introduce myself to Tailwind and Typescript, and try out the popular shadcn library. It's a relatively cutting edge collection of libraries and patterns, all of which were new to me.
+This is an app for a fictional pet daycare platform. The purpose of building this was to get more comfortable with the newer features of NextJS (14), introduce myself to Tailwind and Typescript, newer hooks like useOptimistic, useFormStatus, useTransition, and try out some popular packages/libraries like shadcn/ui and Zod, and check out Stripe's payment form using redirects and a webhook listener route. It's a relatively cutting edge collection of libraries and patterns, all of which were new to me. The app itself is of course quite barebones, but under the hood is pretty robust.
 
-## Typescript
+Check it out at
+
+## The Stack
+
+### NextJS
+
+-   App Router
+-   Server components
+
+### Typescript
 
 Everything is typed.
 
--   challenge: typing things like a context api provider
+### Styling
 
-## Context API
+-   TailwindCSS
+-   cn()/twMerge for combining class names for Tailwind
+    -   dynamic styling & making reusable components that can be styled at the implementation level
 
-This project uses the context API for state management.
+### UI Libraries & Patterns
 
--   challenge: introduced an entirely new pattern for doing this with NextJS
+-   Customized shadcn/ui components
+-   Optimistic UI
+-   React-Hook-Form with Zod validation
+-   Next Layouts
 
-### Shadcn-UI
+### State Management
 
-Built on Radix UI, which is an open source component library. Radix doesn't include styling, just behavior like focusing a modal, closing
-modals when the esc key is hit. That stuff is all built in, but shadcn-ui introduces styling by using class-variance-authority. This allows for different variants of components that share core functionality.
+-   Context API
 
-> npx shadcn-ui init
->
-> > config is in components.json
-> > /lib/utils.ts handles the merging of classes in case of conflict (tailwind class order thing)
-> > manually installed ui components are installed to /components/ui
+### API
 
-#### The following components were added from shadcn-ui
+-   Server Actions
+-   A few traditional routes
 
--   button
--   dialog
--   label
--   input
--   textarea
--   sonner
+### Authentication
 
-I also learned how to style custom reusable components to accept additional classes for styling, keeping that out of the components themselves and leaving it to individual implementations. This is done using the cn() utility function. This combines class names in Tailwind and if there's a conflict such as adding px-5 when the component is styled for its use case, the px-2 that existed previously will be overridden.
+-   Next-Auth v5 (credential provider)
+    -   HTTP Only JWTs
 
-### Appropriate html tags
+### Database
 
-In the past, I relied too heavily on divs. Though I've previously written plain html websites, I fell into the div trap when learning react. This project helped readjust to picking the most relevant html tags like section, main, button, ul/li, and use more React.Fragments aka <>.
+-   Prisma ORM
+-   dev db: sqlite (local)
+-   prod db: postgres (cloud)
 
-## Prisma
+### Payments
 
--   npx prisma db push : forceful update, may delete data
--   npx prisma migrate dev --name init : db migration
+-   Stripe payment form
+    -   If you want to test a payment, find card numbers [here](https://docs.stripe.com/testing)
 
-### Prisma Types
+## Challenges
 
-Prisma stores schema objects as typescript types. We can use those instead of hardcoding types that correspond to db models.
+-   typing things like a Context API provider or a server action
+-   learning an entirely new pattern for using the Context API
+-   adjusting to TS syntax and useage
+-   extending and overwriting type definitions from third parties
+-   focusing on always using the most relevant HTML tags, using fewer divs
+-   reducing potential for runtime errors
+-   keeping as many thing server components as possible
+-   wrangling the next/auth aka auth.js lib
 
-```
-import {Pet} from '@prisma/client';
-```
+## Conclusions
 
-### Sqlite
+A lot of the things I learned about in this project will become my preferred way of doing things. I will definitely continue using Typescript for anything production, tailwind, Next 14+ and all of its magic features, Prisma, the Context pattern used in PetContextProvider,
+React-Hook-Form with Zod. I loved being able to customize and modify shadcn/ui's components while keeping their very useful functionality.
 
-dev db is sqlite.
-
-##### Seeding Data
-
-We have a seed file to fill our empty db for testing (prisma/seed.ts). To use it, we need a script added to package.json
-
-```
-   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
-    },
-```
-
-and to run it, we use
-`npx prisma db seed`
-
-## Server Actions
-
-These do not increase the size of the JS bundle, will be interactive/functional faster. Everything happens in a single network request too.
-
-## Optimistic UI
-
-The useOptimistic() hook was also researched and implemented in this project.
-
-## React-Hook-Form & Zod validation
-
-React Hook Form with Zod validation on both client and server
-
-## Next-Auth
-
-Next-auth is powering our JWT session tokens. They're http-only and same-site only so they are inaccessible to the client.
-
-## Payments
-
-Stripe payments (through the payment form with redirect) for payments.
+I will however be looking for a different auth solution.
