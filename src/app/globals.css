@@ -5,4 +5,10 @@
 :root {
   --orange: hsl(26, 93%, 70%);
   --faded-grey: hsl(0, 0%, 92%);
+  --more-faded-grey: hsl(0, 0%, 94%);
+  --dark-grey: hsl(0, 0%, 88%);
+  --darker-grey: hsl(0, 0%, 84%);
+  --green: hsl(163, 53%, 39%);
+  --lighter-green: hsl(163, 53%, 45%);
+  --darker-green: hsl(163, 53%, 30%);
 }

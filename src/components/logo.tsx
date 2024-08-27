@@ -1,17 +1,19 @@
 import Image from 'next/image';
 import logo from '../../public/catPawBig.png';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 type LogoSizeProps = {
 	size: string;
+	className?: string;
 };
 
-export default function Logo({ size }: LogoSizeProps) {
+export default function Logo({ size, className }: LogoSizeProps) {
 	return (
-		<Link className="flex w-fit justify-center items-center" href="/">
+		<Link className={cn('flex w-fit justify-start items-center', className)} href="/">
 			<Image
 				src={logo}
-				alt={'Catopia Logo'}
+				alt={'PetSoft Logo'}
 				width={0}
 				height={0}
 				//sizes="100vw"

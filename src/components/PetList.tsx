@@ -25,16 +25,16 @@ export default function PetList() {
 	const filteredPets = optimisticPets.filter((pet) => pet.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
 	return (
-		<ul className="bg-white border-b border-faded-grey">
+		<ul className="bg-more-faded-grey border-b border-faded-grey">
 			{filteredPets.map((pet, index) => {
 				return (
 					<li key={index}>
 						<button
 							onClick={() => handleChangeActivePetId(pet.id)}
 							className={cn(
-								'flex items-center h-[70px] w-full cursor-pointer px-5 text-base gap-3 hover:bg-[#eff1f2] focus:bg-[#eff1f2] transition',
+								'flex items-center h-[70px] w-full cursor-pointer px-5 text-base gap-3 hover:bg-faded-grey focus:bg-darker-grey transition',
 								{
-									'bg-[#eff1f2]': activePetId === pet.id,
+									'bg-darker-grey': activePetId === pet.id,
 								}
 							)}
 						>

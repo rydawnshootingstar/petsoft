@@ -34,7 +34,13 @@ const config = {
       },
       colors: {
         "orange": "var(--orange)",
-        "faded-grey": "var(--faded-grey)"
+        "faded-grey": "var(--faded-grey)",
+        "green": "var(--green)",
+        "more-faded-grey": "var(--more-faded-grey)",
+        "darker-grey": "var(--darker-grey)",
+        "dark-grey": "var(--dark-grey)",
+        "lighter-green": "var(--lighter-green)",
+        "darker-green": "var(--darker-green)",
       }
     },
   },

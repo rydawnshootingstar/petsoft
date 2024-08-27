@@ -29,7 +29,7 @@ export default function PaymentButton() {
 	return (
 		<Button
 			disabled={isPending}
-			className="mt-10"
+			className="mt-10  bg-darker-green text-white hover:bg-green"
 			onClick={async () => {
 				startTransition(async () => {
 					await createCheckoutSession();

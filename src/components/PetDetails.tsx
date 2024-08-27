@@ -10,12 +10,14 @@ import PetButton from './PetButton';
 /*
 	useTransition was used here for a server action called outside a form for non-form loading state. It is unused since moving 
 	to the optimistic ui pattern. 
+
+	TODO: Refine responsive css
 */
 
 export default function PetDetails() {
 	let { activePet } = usePetContext();
 	return (
-		<section className="flex bg-black/5 flex-col h-full w-full">
+		<section className="flex bg-more-faded-grey flex-col h-full w-full">
 			{!activePet ? (
 				<EmptyView />
 			) : (
@@ -46,7 +48,7 @@ function TopBar({ activePet }: Props) {
 	// NOTE: normal mode
 	// const [isPending, startTransition] = useTransition();
 	return (
-		<div className={'flex items-center bg-white px-8 py-5 border-b border-faded-grey'}>
+		<div className={'flex items-center bg-white sm:px-8 py-5 border-b border-faded-grey'}>
 			<Image
 				src={activePet?.imageUrl}
 				alt="pet pic"
@@ -55,8 +57,10 @@ function TopBar({ activePet }: Props) {
 				className="h-[75px] w-[75px] rounded-full object-cover"
 			/>
 
-			<h2 className="text-3xl font-semibold leading-7 ml-5">{activePet?.name}</h2>
-			<div className="ml-auto space-x-2 ">
+			<h2 className="text-3xl font-semibold leading-7 w-[100px] sm:w-[150px] md:w-[200px] lg:w-[320px] ml-5 xl:mr-5  break-words">
+				{activePet?.name}
+			</h2>
+			<div className="ml-auto lg:w-[260px] space-x-2 ">
 				<PetButton actionType="edit" />
 				<PetButton
 					actionType="checkout"

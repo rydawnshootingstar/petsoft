@@ -20,7 +20,7 @@ export default async function Account() {
 	return (
 		<main>
 			<SectionHeader className={'my-8 text-white'}>Your Account</SectionHeader>
-			<ContentBlock className={'h-[500px] flex justify-center items-center flex-col gap-5'}>
+			<ContentBlock className={'bg-more-faded-grey h-[500px] flex justify-center items-center flex-col gap-5'}>
 				<p className="">Logged in as {session?.user?.email}</p>
 				<LogoutButton></LogoutButton>
 			</ContentBlock>

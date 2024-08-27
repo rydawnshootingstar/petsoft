@@ -42,6 +42,7 @@ Everything is typed.
 -   Next-Auth
     -   JWT strategy
     -   Credential provider
+    -   Middleware
 
 ### Database
 

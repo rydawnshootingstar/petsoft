@@ -25,7 +25,7 @@ export default function PetButton({ children, className, actionType, onClick, di
 		return (
 			<Dialog open={formOpen} onOpenChange={setFormOpen}>
 				<DialogTrigger asChild>
-					<Button size="icon" className={cn('h-14 w-14', className)}>
+					<Button size="icon" id="addPetButton" className={cn('h-14 w-14', className)}>
 						{children ? children : <PlusIcon className="h-6 w-6" />}
 					</Button>
 				</DialogTrigger>
@@ -51,7 +51,7 @@ export default function PetButton({ children, className, actionType, onClick, di
 		return (
 			<Dialog open={formOpen} onOpenChange={setFormOpen}>
 				<DialogTrigger asChild>
-					<Button variant="secondary" className={cn('', className)}>
+					<Button variant="secondary" id="editPetButton" className={cn('', className)}>
 						{children ? children : 'Edit'}
 					</Button>
 				</DialogTrigger>
@@ -75,7 +75,13 @@ export default function PetButton({ children, className, actionType, onClick, di
 		);
 	} else if (actionType === 'checkout') {
 		return (
-			<Button disabled={disabled} onClick={onClick} variant="secondary" className={cn('', className)}>
+			<Button
+				disabled={disabled}
+				onClick={onClick}
+				variant="secondary"
+				id="checkoutPetButton"
+				className={cn('', className)}
+			>
 				{children ? children : 'Checkout'}
 			</Button>
 		);

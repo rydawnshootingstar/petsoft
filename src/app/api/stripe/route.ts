@@ -4,12 +4,9 @@
 import prisma from "@/lib/db";
 import Stripe from 'stripe';
 
-
-
 export async function POST(req: Request) {
     const bodyData = await req.text();
     const signature = req.headers.get('stripe-signature') as string;
-
     const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY as string);
 
     // veryify that webhook comes from Stripe
@@ -22,8 +19,6 @@ export async function POST(req: Request) {
     }
 
     // fulfill order
-
-    // TODO: set up webhook and inspect how this looks. look for customer object with email attribute
     async function handleCheckoutSessionCompleted(event: Stripe.CheckoutSessionCompletedEvent) {
         try {
             await prisma.user.update({
@@ -44,8 +39,4 @@ export async function POST(req: Request) {
         default:
             return console.log(`Unhandled event type ${event.type}`);
     }
-
-
-
-    return Response.json(null, { status: 200 });
 }

@@ -35,7 +35,7 @@ export default async function DashboardHome() {
 					<SearchForm />
 				</div>
 				<div className="relative md:row-start-2 md:row-span-full md:col-start-1 md:col-span-1">
-					<ContentBlock>
+					<ContentBlock className="bg-more-faded-grey max-h-[600px] overflow-auto overflow-y-scroll">
 						<PetList />
 
 						<PetButton className="absolute bottom-4 right-4" actionType={'add'} />
