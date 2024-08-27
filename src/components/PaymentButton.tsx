@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 	useTransition() hook gives us pending state for a component that's not inside a form. The server action must be wrapped in
 	startTransition()
 
-	ISSUE: Router check and push are here because the redirect attempted in auth.ts only partially works. They're 
+	TEMP FIX(?): Router check and push are here because the redirect attempted in auth.ts only partially works. They're 
 	redirected but the URL isn't properly replaced, and so a newly logged in user can't use the server action. It POSTS
 	to /signup which doesn't work. Don't render PaymentButton outside of the payment page without changing. 
 */

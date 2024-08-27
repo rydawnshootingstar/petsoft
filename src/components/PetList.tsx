@@ -7,7 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 /*
-	ISSUE: Router check and push are here because the redirect attempted in auth.ts only partially works. They're 
+	TEMP FIX(?): Router check and push are here because the redirect attempted in auth.ts only partially works. They're 
 	redirected but the URL isn't properly replaced, and so a newly logged in user can't use the server action. It POSTS
 	to /login or /signup which doesn't work. Don't render PetList outside of the dashboard without changing. 
 */

@@ -9,9 +9,12 @@ import { authSchema } from './zodSchemas';
 
     When next-auth's signIn does a redirect, it's actually throwing an error. We deal with this in actions.ts
 
-    ISSUE: in the authorized callback, our redirects "work". The user is redirected to /app/dashboard for example, but the router
+    TEMP FIX(?): in the authorized callback, our redirects "work". The user is redirected to /app/dashboard for example, but the router
     doesn't contain the correct url. It still thinks it's /login or /signup. This is fixed within PetList.tsx for dashboard
     and the payment page for payments. 
+
+    POTENTIAL ISSUE: apparently bcrypt has a problem with running on the edge. If we encounter this, we need to split the config into
+    one part with everything but the providers (the part using bcrypt) and one part with the provider. So far this has not been an issue.
 */
 
 const config = {
@@ -34,13 +37,13 @@ const config = {
 
                 const user = await getUserByEmail(email);
                 if (!user) {
-                    console.log("invalid email");
+                    // console.log("invalid email");
                     return null;
                 }
 
                 const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
                 if (!passwordMatch) {
-                    console.log("invalid credentials");
+                    // console.log("invalid credentials");
                     return null;
                 }
 
